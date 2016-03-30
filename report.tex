@@ -1,0 +1,73 @@
+\documentclass[a4paper, titlepage]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{courier} % Required for the courier font
+\usepackage[bookmarks]{hyperref}
+\usepackage{amsfonts}
+
+%redefine percentage sign to be a little smaller
+\let\oldpct\%
+\renewcommand{\%}{\scalebox{.9}{\oldpct}}
+
+\begin{document}
+
+\title{Artificial Life Individual Assignment}
+\author{
+	Sigurt Bladt Dinesen
+	\\\texttt{sidi@itu.dk}
+}
+
+\maketitle
+
+\tableofcontents
+\chapter{Evolutionary Computation}
+This chapter details my solution to \texttt{Option 2}, using a genetic algorithm
+to solve an instance of the Traveling Salesman Problem (TSP).
+
+There are four main points to define a genetic algorithm. Here are the
+definitions I used to this lab:
+\begin{description}
+\item[Genotype and phenotype]
+The genotype is just an ordered list of vertexes (city ids).
+The interpretation of the genotype (the phenotype) is a path through the graph
+representing our instance of TSP, progressing through the vertices in the
+genome, returning the first vertex in the end.
+
+\item[Mutation]
+The step that takes one generation of genomes, and creates a
+new generation of genomes. In this report, mutation is done by sexual
+reproduction between two genomes, by random crossover, producing only one child.
+
+I experimented with random mutation as well, but did
+not achieve any better results.
+
+\item[Fitness]
+Determines the \textit{evolutionary} value of a genome, for use in
+\texttt{selection}. The obvious choice for a (fitness) function here is the
+travel-cost of the phenotype. Neither mutation nor the definition of the genome
+ensures the \textit{validity} of a genome in this solution, i.e. a genome could
+look like $\left[1,1,1,1,1,1,1,1,1,1\right]$, which is not just a \textit{bad}
+solution, but not a solution at all. So the fitness function must steer the
+selection away from such genomes. To achieve this, another term is included in
+the fitness function: An exponential function (for smoothness) of the Jaccard
+distance between the genome, and the list of all vertexes
+($\left[1,2,3,4,5,6,7,8,9,10\right]$). 
+The final fitness function of a genome $g$ is defined as
+
+	$$2^{J(g) \cdot T} + pathlength(g)$$
+
+Where $J$ is one minus the Jaccard distance between $g$ and the set of all
+vertices, and $T$ is a large constant term to ensure that non-zero Jaccard
+distances are weighed heavier than any path length.
+
+\item[Selection]
+The step that takes one generation of genomes, and decides who (or whose children)
+gets to be part of the next generation of genomes.
+In this project, selection is done by taking the best half of the population, and
+letting it, and their children, be the new population.
+This does not preserve diversity very well, but seems to produce good results
+nonetheless.
+\end{description}
+
+This genetic algorithm converges on a solution after ca. 15 generations. After ca. 30, the worst and best solutions in the genome remain the same, and are of similar fitness.
+
+\end{document}
